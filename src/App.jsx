@@ -1,10 +1,11 @@
 import './App.css'
+import MatchesList from './components/MatchesList'
 
 function App() {
   return (
-    <>
-      <p className='h-screen text-purple-500 bg-pink-300 flex items-center justify-center font-serif text-3xl'>Hlo, I am Drag !!</p>
-    </>
+    <div className="min-h-screen bg-gray-100">
+      <MatchesList />
+    </div>
   )
 }
 
