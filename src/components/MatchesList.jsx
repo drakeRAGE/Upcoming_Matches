@@ -2,6 +2,20 @@ import { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 
+// Helper function to check if an image URL is valid
+const checkImage = (url) => {
+  return new Promise((resolve) => {
+    if (!url) {
+      resolve(false); // Resolve false if URL is null or undefined
+      return;
+    }
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => resolve(false);
+    img.src = url;
+  });
+};
+
 const MatchesList = () => {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -12,17 +26,34 @@ const MatchesList = () => {
       try {
         const response = await axios.get('http://localhost:5000/api/matches');
         
-        // Filter matches to only include those with all required image URLs
-        const filteredMatches = response.data.filter(match => 
-          match.teams?.home?.logo && 
-          match.teams?.away?.logo && 
-          match.league?.logo && 
-          match.country?.flag
-        );
+        const rawMatches = response.data;
+        const validMatches = [];
 
-        setMatches(filteredMatches);
+        // Check each match for valid image URLs
+        for (const match of rawMatches) {
+          const homeLogoValid = await checkImage(match.teams?.home?.logo);
+          const awayLogoValid = await checkImage(match.teams?.away?.logo);
+          const leagueLogoValid = await checkImage(match.league?.logo);
+          const countryFlagValid = await checkImage(match.country?.flag);
 
-        console.log("Fetched and filtered data:", filteredMatches); // Log filtered data
+          // Only include the match if all required images are valid
+          if (homeLogoValid && awayLogoValid && leagueLogoValid && countryFlagValid) {
+            validMatches.push(match);
+          } else {
+            // Optional: Log which match was filtered out and why
+            console.warn(`Match filtered out due to invalid image URL:`, {
+                id: match.id,
+                homeLogoValid,
+                awayLogoValid,
+                leagueLogoValid,
+                countryFlagValid
+            });
+          }
+        }
+
+        setMatches(validMatches);
+
+        console.log("Fetched and filtered data:", validMatches); // Log filtered data
         setLoading(false);
       } catch (err) {
         console.error("Error fetching matches:", err); // Log the actual error
@@ -50,6 +81,7 @@ const MatchesList = () => {
           >
             {/* League and Country Info */}
             <div className="flex items-center justify-center mb-5 text-gray-600 text-sm font-medium border-b pb-4 border-gray-100">
+                {/* We already filtered, so these should exist, but adding ?. for safety */}
                 {match.league?.logo && <img src={match.league.logo} alt={match.league.name} className="h-6 w-6 object-contain mr-2" />}
                 <span className="text-gray-800">{match.league?.name || 'Unknown League'}</span>
                 <span className="mx-2 text-gray-400">|</span>
@@ -60,16 +92,18 @@ const MatchesList = () => {
             {/* Teams and VS */}
             <div className="flex justify-between items-center mb-6">
               <div className="flex-1 text-center flex flex-col items-center px-2">
-                {match.teams.home?.logo && <img src={match.teams.home.logo} alt={match.teams.home.name} className="h-24 w-24 object-contain mx-auto mb-3" />}
-                <p className="font-bold text-xl text-gray-800 truncate w-full">{match.teams.home?.name || 'Home Team'}</p>
+                {/* We already filtered, so these should exist */}
+                <img src={match.teams.home.logo} alt={match.teams.home.name} className="h-24 w-24 object-contain mx-auto mb-3" />
+                <p className="font-bold text-xl text-gray-800 truncate w-full">{match.teams.home.name || 'Home Team'}</p>
               </div>
               <div className="mx-4 flex flex-col items-center text-gray-700 font-bold text-3xl">
                 VS
                 {match.status?.short && <span className="text-sm text-gray-500 mt-2 font-normal">{match.status.short}</span>}
               </div>
               <div className="flex-1 text-center flex flex-col items-center px-2">
-                {match.teams.away?.logo && <img src={match.teams.away.logo} alt={match.teams.away.name} className="h-24 w-24 object-contain mx-auto mb-3" />}
-                <p className="font-bold text-xl text-gray-800 truncate w-full">{match.teams.away?.name || 'Away Team'}</p>
+                 {/* We already filtered, so these should exist */}
+                <img src={match.teams.away.logo} alt={match.teams.away.name} className="h-24 w-24 object-contain mx-auto mb-3" />
+                <p className="font-bold text-xl text-gray-800 truncate w-full">{match.teams.away.name || 'Away Team'}</p>
               </div>
             </div>
 
