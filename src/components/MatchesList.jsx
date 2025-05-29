@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import datafromData from './Data'; // Import the datafro
 
 // Helper function to check if an image URL is valid
 const checkImage = (url) => {
@@ -34,8 +35,6 @@ const MatchesList = () => {
       const response = await axios.get(`http://localhost:5000/api/matches?date=${date}`);
 
       const rawMatches = response.data;
-      // Log the raw data received from the backend
-      console.log("Raw data received from backend:", rawMatches);
 
       const validMatches = [];
 
@@ -87,70 +86,181 @@ const MatchesList = () => {
 
 
   return (
-    <div className="container mx-auto px-4 py-8 bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
-      <h1 className="text-4xl font-extrabold text-center text-gray-800 mb-8 drop-shadow-sm">Upcoming Basketball Matches</h1>
+    <div className="min-h-screen bg-[url('https://tse4.mm.bing.net/th/id/OIP.uD3NA5wuvghK6ll2aAL83AHaE1?rs=1&pid=ImgDetMain')] bg-cover bg-center bg-fixed">
+      {/* Overlay */}
+      <div className="min-h-screen backdrop-blur-sm">
+        {/* Header section */}
+        <div className="container mx-auto px-6 py-12">
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">
+              Upcoming <span className="text-blue-400">Basketball</span> Matches
+            </h1>
+            <p className="text-xl text-gray-300 max-w-2xl mx-auto">
+              Discover exciting basketball games from around the world
+            </p>
+          </div>
 
-      {/* Date Picker and Fetch Button */}
-      <div className="flex justify-center items-center mb-12 space-x-4">
-        <label htmlFor="match-date" className="text-lg font-medium text-gray-700">Select Date:</label>
-        <input
-          type="date"
-          id="match-date"
-          value={selectedDate}
-          onChange={(e) => setSelectedDate(e.target.value)}
-          // min={today} // Restrict selection to today and future dates
-          className="px-4 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-gray-700"
-        />
-        <button
-          onClick={() => fetchMatches(selectedDate)}
-          className="px-6 py-2 bg-blue-600 text-white font-semibold rounded-md shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out"
-          disabled={loading} // Disable button while loading
-        >
-          Fetch Matches
-        </button>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {matches.map((match) => (
-          <div
-            key={match.id}
-            className="bg-white rounded-2xl shadow-xl p-6 flex flex-col justify-between border border-gray-200 hover:shadow-2xl transform hover:-translate-y-1 transition-all duration-300 ease-in-out"
-          >
-            {/* League and Country Info */}
-            <div className="flex items-center justify-center mb-5 text-gray-600 text-sm font-medium border-b pb-4 border-gray-100">
-              {/* We already filtered, so these should exist, but adding ?. for safety */}
-              {match.league?.logo && <img src={match.league.logo} alt={match.league.name} className="h-6 w-6 object-contain mr-2" />}
-              <span className="text-gray-800">{match.league?.name || 'Unknown League'}</span>
-              <span className="mx-2 text-gray-400">|</span>
-              {match.country?.flag && <img src={match.country.flag} alt={match.country.name} className="h-4 w-6 object-contain ml-1 border border-gray-300 rounded" />}
-              <span className="ml-1 text-gray-800">{match.country?.name || 'Unknown Country'}</span>
-            </div>
-
-            {/* Teams and VS */}
-            <div className="flex justify-between items-center mb-6">
-              <div className="flex-1 text-center flex flex-col items-center px-2">
-                {/* We already filtered, so these should exist */}
-                <img src={match.teams.home.logo} alt={match.teams.home.name} className="h-24 w-24 object-contain mx-auto mb-3" />
-                <p className="font-bold text-xl text-gray-800 truncate w-full">{match.teams.home.name || 'Home Team'}</p>
-              </div>
-              <div className="mx-4 flex flex-col items-center text-gray-700 font-bold text-3xl">
-                VS
-                {match.status?.short && <span className="text-sm text-gray-500 mt-2 font-normal">{match.status.short}</span>}
-              </div>
-              <div className="flex-1 text-center flex flex-col items-center px-2">
-                {/* We already filtered, so these should exist */}
-                <img src={match.teams.away.logo} alt={match.teams.away.name} className="h-24 w-24 object-contain mx-auto mb-3" />
-                <p className="font-bold text-xl text-gray-800 truncate w-full">{match.teams.away.name || 'Away Team'}</p>
-              </div>
-            </div>
-
-            {/* Date and Time */}
-            <div className="text-center text-gray-700 text-md pt-4 border-t border-gray-100">
-              <p className="font-semibold text-gray-800">{moment(match.date).format('MMMM Do YYYY')}</p>
-              <p className="text-sm text-gray-600">{moment(match.date).format('h:mm a')}</p>
+          {/* Date controls */}
+          <div className="bg-black/50 p-6 rounded-2xl shadow-xl border border-white/10 max-w-2xl mx-auto mb-16">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4">
+              <label htmlFor="match-date" className="text-lg font-medium text-white">
+                Select Date:
+              </label>
+              <input
+                type="date"
+                id="match-date"
+                value={selectedDate}
+                onChange={(e) => setSelectedDate(e.target.value)}
+                className="px-5 py-3 bg-black/30 border border-white/20 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+              />
+              <button
+                onClick={() => fetchMatches(selectedDate)}
+                className="px-8 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-500 hover:to-blue-600 text-white font-bold rounded-xl shadow-lg transform hover:scale-105 transition-all duration-300"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="flex items-center justify-center">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    Loading...
+                  </span>
+                ) : 'Find Matches'}
+              </button>
             </div>
           </div>
-        ))}
+
+          {/* Matches grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {matches.map((match) => (
+              <div
+                key={match.id}
+                className="relative bg-gray-900/80 rounded-2xl overflow-hidden shadow-2xl border border-gray-700 hover:border-blue-500 transition-all duration-300 group"
+              >
+                {/* Match status badge */}
+                <div className="absolute top-4 right-4 bg-gradient-to-r from-blue-600 to-blue-700 text-white text-xs font-bold px-3 py-1 rounded-full shadow-md">
+                  {match.status?.short || 'UPCOMING'}
+                </div>
+
+                {/* League header with gradient */}
+                <div className="bg-gradient-to-r from-gray-800 to-gray-700 p-4 flex items-center space-x-3">
+                  {match.league?.logo && (
+                    <div className="bg-white/10 p-1.5 rounded-lg shadow-inner">
+                      <img
+                        src={match.league.logo}
+                        alt={match.league.name}
+                        className="h-8 w-8 object-contain"
+                      />
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="font-bold text-white text-sm">{match.league?.name}</h3>
+                    <div className="flex items-center mt-1">
+                      {match.country?.flag && (
+                        <img
+                          src={match.country.flag}
+                          alt={match.country.name}
+                          className="h-4 w-6 object-contain rounded border border-gray-500 mr-2"
+                        />
+                      )}
+                      <span className="text-xs text-gray-300">{match.country?.name}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Match content */}
+                <div className="p-6">
+                  {/* Date and time */}
+                  <div className="text-center mb-6">
+                    <p className="text-blue-400 font-medium text-sm">
+                      {moment(match.date).format('dddd, MMMM Do')}
+                    </p>
+                    <p className="text-white text-2xl font-bold tracking-tight">
+                      {moment(match.date).format('h:mm A')}
+                    </p>
+                  </div>
+
+                  {/* Teams matchup */}
+                  <div className="flex flex-col items-center">
+                    <div className="w-full flex justify-between items-center">
+                      {/* Home team */}
+                      <div className="text-center w-2/5">
+                        <div className="relative mx-auto mb-3">
+                          <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                          <div className="bg-white/5 p-2 rounded-full relative z-10 border border-gray-600/50">
+                            <img
+                              src={match.teams.home.logo}
+                              alt={match.teams.home.name}
+                              className="h-16 w-16 mx-auto object-contain"
+                            />
+                          </div>
+                        </div>
+                        <p className="font-bold text-white text-sm truncate px-2">{match.teams.home.name}</p>
+                      </div>
+
+                      {/* VS separator */}
+                      <div className="text-center w-1/5">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-blue-600/30 rounded-full blur-md"></div>
+                          <div className="inline-flex items-center justify-center h-12 w-12 rounded-full bg-gradient-to-br from-blue-600 to-blue-700 text-white font-bold text-lg shadow-lg relative z-10">
+                            VS
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Away team */}
+                      <div className="text-center w-2/5">
+                        <div className="relative mx-auto mb-3">
+                          <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
+                          <div className="bg-white/5 p-2 rounded-full relative z-10 border border-gray-600/50">
+                            <img
+                              src={match.teams.away.logo}
+                              alt={match.teams.away.name}
+                              className="h-16 w-16 mx-auto object-contain"
+                            />
+                          </div>
+                        </div>
+                        <p className="font-bold text-white text-sm truncate px-2">{match.teams.away.name}</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Match footer */}
+                <div className="px-4 py-3 bg-gray-800/50 border-t border-gray-700 text-center">
+                  <div className="flex justify-center space-x-6">
+                    <div className="text-center">
+                      <p className="text-xs text-gray-400 uppercase tracking-wider">Venue</p>
+                      <p className="text-sm text-white font-medium">TBD Arena</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xs text-gray-400 uppercase tracking-wider">Referee</p>
+                      <p className="text-sm text-white font-medium">John Smith</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* Empty state */}
+          {matches.length === 0 && !loading && !error && (
+            <div className="text-center py-16">
+              <div className="inline-block p-8 bg-black/50 rounded-2xl border border-white/10 backdrop-blur-sm">
+                <svg className="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                <p className="text-xl text-white mt-4">
+                  No matches found for selected date
+                </p>
+                <p className="text-gray-400 mt-2">
+                  Try selecting a different date
+                </p>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
