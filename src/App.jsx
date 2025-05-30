@@ -36,7 +36,7 @@ function App() {
     setMatches([]);
 
     try {
-      const response = await axios.get(`http://localhost:5000/api/matches?date=${date}`);
+      const response = await axios.get(`https://upcoming-matches-backend.vercel.app/api/matches?date=${date}`);
 
       const rawMatches = response.data;
 
