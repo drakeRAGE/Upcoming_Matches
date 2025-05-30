@@ -32,9 +32,12 @@ const MatchesList = () => {
 
     try {
       // Pass the selected date as a query parameter
-      const response = await axios.get(`http://localhost:5000/api/matches?date=${date}`);
+      // const response = await axios.get(`http://localhost:5000/api/matches?date=${date}`);
 
-      const rawMatches = response.data;
+      // const rawMatches = response.data;
+      const rawMatches = datafromData;
+      // Log the raw data received from the backend
+      console.log("Raw data received from backend:", rawMatches);
 
       const validMatches = [];
 
@@ -213,15 +216,15 @@ const MatchesList = () => {
                       <div className="text-center w-2/5">
                         <div className="relative mx-auto mb-3">
                           <div className="absolute inset-0 bg-blue-500/20 rounded-full blur-lg group-hover:blur-xl transition-all duration-500"></div>
-                          <div className="bg-white/5 p-2 rounded-full relative z-10 border border-gray-600/50">
+                          <div className="bg-white/5 p-2 rounded-full flex justify-end relative z-10 border border-gray-600/50">
                             <img
                               src={match.teams.away.logo}
                               alt={match.teams.away.name}
                               className="h-16 w-16 mx-auto object-contain"
                             />
+                            <p className="font-bold text-white text-sm truncate px-2">{match.teams.away.name}</p>
                           </div>
                         </div>
-                        <p className="font-bold text-white text-sm truncate px-2">{match.teams.away.name}</p>
                       </div>
                     </div>
                   </div>
